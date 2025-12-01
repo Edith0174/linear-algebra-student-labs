@@ -34,21 +34,26 @@ def lu_factorisation(A):
     if n != m:
         raise ValueError(f"Matrix A is not square {A.shape=}")
     
-    L = np.eye(n)  # diagonal filled with 1s
-    U = np.zeros(shape=(n,n), dtype=float)
+    L, U = np.zeros_like(A), np.zeros_like(A)
+
+    # 1s in diagonal
+    for i in range(n):
+        L[i,i] = 1
 
     for j in range(n):
+        # j th row in U from 0 to j
         for i in range(j + 1):
-            s = 0.0
-            for k in range(i):           # sum_{k=0..i-1} L[i,k]*U[k,j]
-                s += L[i, k] * U[k, j]
-            U[i, j] = A[i, j] - s
-
+            sum = 0.0
+            for k in range(i):
+                sum += L[i, k] * U[k, j]
+            U[i, j] = A[i, j] - sum
+        
+        # j th row in L from j+1 to last row
         for i in range(j + 1, n):
-            s = 0.0
-            for k in range(j):           # sum_{k=0..j-1} L[i,k]*U[k,j]
-                s += L[i, k] * U[k, j]
-            L[i, j] = (A[i, j] - s) / U[j, j]
+            sum = 0.0
+            for k in range(j):
+                sum += L[i, k] * U[k, j]
+            L[i, j] = (A[i, j] - sum) / U[j, j]
     
     return L, U
 
@@ -95,9 +100,10 @@ for n in sizes:
     # generate a random system of linear equations of size n
     A, b, x = generate_safe_system(n)
 
-
-    L, U = lu_factorisation(A)   # your LU function
+    # do the solve
+    L, U = lu_factorisation(A)
     y = forward_substitution(L, b)
     solve = backward_substitution(U, y)
 
-    print(solve)
+    print(f"Solve {n}: ", solve)
+
