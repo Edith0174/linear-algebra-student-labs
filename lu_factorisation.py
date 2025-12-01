@@ -1,7 +1,7 @@
 def lu_factorisation(A):
     n, m = A.shape
     if n != m:
-        raise ValueError(f"Matrix A is not square {A.shape=}")
+        raise ValueError(f"A is not square")
     
     L, U = np.zeros_like(A), np.zeros_like(A)
 
